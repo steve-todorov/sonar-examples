@@ -1,0 +1,62 @@
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
+    }
+}
+
+apply plugin: 'org.sonarqube'
+
+// Example global configuration settings
+sonarqube {
+    properties {
+        property "sonar.sourceEncoding", "UTF-8"
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    jacoco {
+        toolVersion = "0.8.4"
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled true
+            csv.enabled false
+            html.enabled true
+            // html.destination file("${buildDir}/jacocoHtml")
+        }
+    }
+
+    // Example shared configuration settings
+    sonarqube {
+        properties {
+            property "sonar.sources", "src/main/java"
+            property "sonar.tests", "src/test/java"
+            property "sonar.junit.reportPaths", "build/test-results/test"
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.12'
+    }
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
